@@ -115,7 +115,7 @@ export function moveFocus(dir) {
   const all = getFocusable();
   if (!all.length) return false;
 
-  let active = document.activeElement; if (window.__tvdbg) console.log('mf', dir, active?.className, active?.isConnected, all.includes(active));
+  let active = document.activeElement;
   const modal  = getOpenModal();
 
   const pool = modal ? all.filter(el => modal.contains(el)) : all;
