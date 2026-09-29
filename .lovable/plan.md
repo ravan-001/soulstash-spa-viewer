@@ -5,8 +5,8 @@ Give Soulstash a distinctive, premium OTT identity for movies, series, and anime
 
 ## What will change
 - Establish a cohesive cinematic theme with near-black theater surfaces, warm marquee accents, cool screen-light accents, stronger typography, and consistent focus states.
-- Upgrade the home screen hierarchy so Trending feels like the featured destination rather than another identical shelf, while keeping the existing live content and navigation paths.
-- Visually distinguish Movies, Series, and Anime through restrained labels and accent treatments on posters and discovery controls.
+- Refine the existing home shelves and Trending presentation without adding sections or changing the available content.
+- Improve the existing poster cards and anime filter through restrained labels and accent treatments, using only data already provided by current APIs.
 - Refine the top and mobile navigation, shelf headings, poster cards, loading states, empty states, and key detail-page surfaces to feel like one product.
 - Preserve the compact, scannable poster layout and ensure the first viewport still reveals discoverable content.
 - Keep desktop, mobile, keyboard, and TV remote interaction usable and visually clear.
@@ -15,11 +15,11 @@ Give Soulstash a distinctive, premium OTT identity for movies, series, and anime
 - Do not change API calls, authentication, collection behavior, playback, routes, caches, or data models.
 - Preserve DOM attributes and ordering relied on by TV/D-pad navigation.
 - Reuse real catalog artwork already supplied by the app; no invented titles or placeholder content.
-- Keep all current pages and actions available.
+- Keep all current pages and actions available; add no tabs, pages, sections, or components.
 
 ## Technical approach
 - Add semantic design tokens in the global stylesheet, then replace scattered one-off visual colors in the touched UI.
-- Restyle existing React presentation components rather than rewriting working hooks or business logic.
+- Restyle existing React presentation components only; do not introduce new components.
 - Focus changes in the global theme, navigation, home shelves, poster cards, section headings, anime filter, and detail presentation.
 - Update app metadata only if its current description does not clearly represent movies, series, and anime.
 - Validate the running preview at desktop and mobile widths, including focus visibility and error-free rendering.
