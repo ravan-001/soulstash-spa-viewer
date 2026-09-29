@@ -1,4 +1,4 @@
-import { getFocusable, getFocusableIn, isVisible, score, applyFocus, FOCUSABLE_SEL } from './spatialCore.js';
+import { getFocusable, getFocusableIn, isVisible, score, applyFocus, FOCUSABLE_SEL, lastFocused, lastRect } from './spatialCore.js';
 
 export function getZone(el) {
   const explicit = el.closest('[data-tv-zone]');
