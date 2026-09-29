@@ -11,6 +11,7 @@ export const FOCUSABLE_SEL = [
 
 export const FOCUSED = 'tv-focused';
 export let lastFocused = null;
+export let lastRect = null;
 
 export function setLastFocused(el) {
   lastFocused = el;
@@ -67,5 +68,6 @@ export function applyFocus(el, scroll = true) {
   el.focus({ preventScroll: true });
   el.classList.add(FOCUSED);
   lastFocused = el;
+  lastRect = el.getBoundingClientRect();
   if (scroll) el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
 }
