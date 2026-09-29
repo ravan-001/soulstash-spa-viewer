@@ -326,6 +326,7 @@ html.tv-nav-active article .tv-focused {
   outline-offset: 4px;
   transform: translateY(-4px) scale(1.04) !important;
   border-radius: 12px;
+  background-color: var(--cinema-surface, #121016) !important;
 }
 html.tv-nav-active .tv-focused.card .cardImageWrap,
 html.tv-nav-active .tv-focused[data-card] .cardImageWrap {
