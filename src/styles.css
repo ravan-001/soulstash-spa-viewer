@@ -447,6 +447,7 @@
 }
 
 .mobile-bottom-nav-react__item {
+  position: relative;
   display: flex;
   flex: 1 1 0%;
   min-width: 0;

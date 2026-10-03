@@ -382,6 +382,7 @@ html.tv-nav-active .mobile-bottom-nav-react__item.tv-focused {
   background: transparent !important;
   opacity: 1;
   isolation: isolate;
+  animation: none;
 }
 html.tv-nav-active .modern-navbar-react .nav-link.tv-focused::before,
 html.tv-nav-active .mobile-bottom-nav-react__item.tv-focused::before {
