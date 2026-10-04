@@ -1020,3 +1020,5 @@ body.detail-artwork-theme {
 [data-collection-row]:hover .poster-edit-btn {
   opacity: 1;
 }
+
+body.detail-artwork-theme .app-shell { background-color: transparent; }
