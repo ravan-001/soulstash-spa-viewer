@@ -878,14 +878,15 @@ body {
 }
 
 body.detail-artwork-theme {
+  --detail-tint: 18 20 24;
+  background-color: rgb(9 10 12) !important;
   background-image:
-    linear-gradient(to bottom, rgb(9 10 12 / 0.76) 0%, rgb(9 10 12 / 0.9) 54%, rgb(9 10 12 / 0.97) 100%),
-    var(--detail-artwork-image),
-    url('/images/dark-bg.png') !important;
-  background-repeat: no-repeat, no-repeat, repeat !important;
-  background-size: cover, cover, auto !important;
-  background-position: center, center 18%, center !important;
-  background-blend-mode: normal, soft-light, normal;
+    radial-gradient(120% 70% at 50% 0%, rgb(var(--detail-tint) / 0.85) 0%, rgb(var(--detail-tint) / 0.45) 45%, transparent 85%),
+    linear-gradient(to bottom, rgb(var(--detail-tint) / 0.55) 0%, rgb(var(--detail-tint) / 0.25) 60%, rgb(9 10 12) 100%) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100%, 100% 100% !important;
+  background-attachment: fixed !important;
+  transition: background-color 600ms ease;
 }
 
 .tv-focus-card.is-focused {
@@ -972,20 +973,28 @@ body.detail-artwork-theme {
   background: var(--cinema-surface-raised);
 }
 
-.action-button--watched { color: var(--action-watched); }
+.action-button--watched {
+  border-color: rgba(121, 184, 198, 0.45);
+  background: var(--action-watched-soft);
+  color: var(--action-watched);
+}
 .action-button--watched.is-active {
   border-color: var(--action-watched);
-  background: var(--action-watched-soft);
-  color: var(--cinema-text);
-  box-shadow: inset 3px 0 var(--action-watched), 0 8px 24px rgba(0, 0, 0, 0.24);
+  background: var(--action-watched);
+  color: var(--cinema-bg);
+  box-shadow: 0 8px 24px rgba(121, 184, 198, 0.28);
 }
 
-.action-button--watchlist { color: var(--action-watchlist); }
+.action-button--watchlist {
+  border-color: rgba(212, 154, 138, 0.45);
+  background: var(--action-watchlist-soft);
+  color: var(--action-watchlist);
+}
 .action-button--watchlist.is-active {
   border-color: var(--action-watchlist);
-  background: var(--action-watchlist-soft);
-  color: var(--cinema-text);
-  box-shadow: inset 3px 0 var(--action-watchlist), 0 8px 24px rgba(0, 0, 0, 0.24);
+  background: var(--action-watchlist);
+  color: var(--cinema-bg);
+  box-shadow: 0 8px 24px rgba(212, 154, 138, 0.28);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1011,3 +1020,5 @@ body.detail-artwork-theme {
 [data-collection-row]:hover .poster-edit-btn {
   opacity: 1;
 }
+
+body.detail-artwork-theme .app-shell { background-color: transparent; }
