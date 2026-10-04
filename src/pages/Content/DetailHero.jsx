@@ -88,58 +88,12 @@ export function DetailHero({
   useEffect(() => {
     const posterPath = content?.poster_path;
     if (!posterPath) return undefined;
-
-    let cancelled = false;
-    const poster = new Image();
-    poster.crossOrigin = 'anonymous';
-    poster.src = imageUrl(posterPath, 'w500');
-
-    poster.onload = () => {
-      if (cancelled) return;
-      try {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d', { willReadFrequently: true });
-        if (!context) return;
-
-        canvas.width = 24;
-        canvas.height = 36;
-        context.drawImage(poster, 0, 0, canvas.width, canvas.height);
-        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-        let red = 0;
-        let green = 0;
-        let blue = 0;
-        let weight = 0;
-
-        for (let index = 0; index < pixels.length; index += 16) {
-          if (pixels[index + 3] < 180) continue;
-          const max = Math.max(pixels[index], pixels[index + 1], pixels[index + 2]);
-          const min = Math.min(pixels[index], pixels[index + 1], pixels[index + 2]);
-          const brightness = (max + min) / 2;
-          const saturation = max - min;
-          if (brightness < 20 || brightness > 238) continue;
-          const pixelWeight = 1 + saturation / 80;
-          red += pixels[index] * pixelWeight;
-          green += pixels[index + 1] * pixelWeight;
-          blue += pixels[index + 2] * pixelWeight;
-          weight += pixelWeight;
-        }
-
-        if (!weight) return;
-        const dominant = [red, green, blue].map(value => Math.round(value / weight));
-        const strongest = Math.max(...dominant);
-        const scale = strongest > 148 ? 148 / strongest : strongest < 72 ? 72 / strongest : 1;
-        const safeTint = dominant.map(value => Math.max(18, Math.round(value * scale)));
-        document.body.style.setProperty('--detail-artwork-rgb', safeTint.join(' '));
-        document.body.classList.add('detail-artwork-theme');
-      } catch {
-        // Keep the standard cinema background when poster sampling is blocked.
-      }
-    };
+    document.body.style.setProperty('--detail-artwork-image', `url("${imageUrl(posterPath, 'w500')}")`);
+    document.body.classList.add('detail-artwork-theme');
 
     return () => {
-      cancelled = true;
       document.body.classList.remove('detail-artwork-theme');
-      document.body.style.removeProperty('--detail-artwork-rgb');
+      document.body.style.removeProperty('--detail-artwork-image');
     };
   }, [content?.poster_path]);
 

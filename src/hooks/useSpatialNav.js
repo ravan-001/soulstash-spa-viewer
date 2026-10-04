@@ -371,8 +371,6 @@ html.tv-nav-active select.tv-focused {
 
 html.tv-nav-active aside:has(input.tv-focused) input.tv-focused { border-radius: 6px; }
 
-html.tv-nav-active .now-showing .tv-focused { border-radius: 5px; background: var(--cinema-surface-raised); }
-
 /* Navigation lives on fixed bars: draw the focus surface inside the button, never as a full-height square. */
 html.tv-nav-active .modern-navbar-react .nav-link.tv-focused,
 html.tv-nav-active .mobile-bottom-nav-react__item.tv-focused {
