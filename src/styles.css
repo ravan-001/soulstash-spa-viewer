@@ -14,6 +14,8 @@
   --action-watched-soft: rgba(112, 174, 184, 0.14);
   --action-watchlist: #d49a8a;
   --action-watchlist-soft: rgba(212, 154, 138, 0.14);
+  --action-collection: #d2a451;
+  --action-collection-soft: rgba(210, 164, 81, 0.16);
   --cinema-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
   --tv-focus-ring: #e9c478;
   --tv-focus-halo: rgba(210, 164, 81, 0.27);
@@ -864,14 +866,30 @@ body {
 }
 
 .app-shell--textured {
+  --page-texture-tint: 92 77 55;
+  position: relative;
+  isolation: isolate;
   background-color: transparent;
   background-image:
-    linear-gradient(rgba(9, 10, 12, 0.9), rgba(9, 10, 12, 0.96)),
-    linear-gradient(125deg, rgba(210, 164, 81, 0.12), rgba(112, 174, 184, 0.08) 48%, rgba(212, 154, 138, 0.08)),
-    url('/images/dark-bg.png');
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-size: 100% 100%, 100% 100%, auto;
+    radial-gradient(100% 65% at 12% 0%, rgb(var(--page-texture-tint) / 0.24), transparent 62%),
+    linear-gradient(rgb(9 10 12 / 0.72), rgb(9 10 12 / 0.91));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   background-attachment: fixed;
+}
+
+.app-shell--textured::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgb(var(--page-texture-tint));
+  background-image: url('/images/dark-bg.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-blend-mode: luminosity;
+  opacity: 0.48;
 }
 
 
@@ -900,12 +918,16 @@ body.detail-artwork-theme {
 }
 
 body.detail-artwork-theme .app-shell--textured {
+  --page-texture-tint: var(--detail-tint);
   background-image:
-    linear-gradient(rgb(9 10 12 / 0.28), rgb(9 10 12 / 0.62)),
-    url('/images/dark-bg.png');
-  background-repeat: no-repeat, repeat;
-  background-size: 100% 100%, auto;
-  background-blend-mode: normal, soft-light;
+    linear-gradient(rgb(var(--detail-tint) / 0.12), rgb(9 10 12 / 0.54));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+body.detail-artwork-theme .app-shell--textured::before {
+  opacity: 0.6;
+  background-blend-mode: luminosity;
 }
 
 .load-more-zone {
@@ -1030,6 +1052,7 @@ body.detail-artwork-theme .app-shell--textured {
   background: rgba(18, 20, 24, 0.82);
   color: var(--cinema-text);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.035), 0 8px 22px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
 .action-button:hover {
@@ -1037,9 +1060,10 @@ body.detail-artwork-theme .app-shell--textured {
 }
 
 .action-button--watched {
-  border-color: rgba(121, 184, 198, 0.45);
-  background: var(--action-watched-soft);
-  color: var(--action-watched);
+  border-color: var(--action-watched);
+  background: color-mix(in srgb, var(--action-watched) 28%, var(--cinema-surface));
+  color: var(--cinema-text);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(121, 184, 198, 0.2);
 }
 .action-button--watched.is-active {
   border-color: var(--action-watched);
@@ -1049,15 +1073,36 @@ body.detail-artwork-theme .app-shell--textured {
 }
 
 .action-button--watchlist {
-  border-color: rgba(212, 154, 138, 0.45);
-  background: var(--action-watchlist-soft);
-  color: var(--action-watchlist);
+  border-color: var(--action-watchlist);
+  background: color-mix(in srgb, var(--action-watchlist) 28%, var(--cinema-surface));
+  color: var(--cinema-text);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 8px 22px rgba(212, 154, 138, 0.2);
 }
 .action-button--watchlist.is-active {
   border-color: var(--action-watchlist);
   background: var(--action-watchlist);
   color: var(--cinema-bg);
   box-shadow: 0 8px 24px rgba(212, 154, 138, 0.28);
+}
+
+.action-button--collection {
+  border-color: var(--action-collection);
+  background: color-mix(in srgb, var(--action-collection) 30%, var(--cinema-surface));
+  color: var(--cinema-text);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(210, 164, 81, 0.22);
+}
+
+.action-button--collection.is-active {
+  background: var(--action-collection);
+  color: var(--cinema-bg);
+  box-shadow: 0 8px 26px rgba(210, 164, 81, 0.32);
+  text-shadow: none;
+}
+
+.action-button--watched:hover,
+.action-button--watchlist:hover,
+.action-button--collection:hover {
+  filter: brightness(1.14);
 }
 
 @media (prefers-reduced-motion: reduce) {
