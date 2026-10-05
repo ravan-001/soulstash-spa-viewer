@@ -444,7 +444,7 @@ function SaveButton({ status, pendingAction, onClick }) {
     <button
       type="button"
       disabled={!!pendingAction}
-      className={`flex h-[40px] w-full items-center justify-center whitespace-nowrap rounded-full bg-white/10 px-6 text-white font-medium hover:bg-white/20 transition-colors ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
+      className={`action-button action-button--collection ${status.customSaved ? 'is-active' : ''} flex h-[40px] w-full items-center justify-center whitespace-nowrap px-6 font-semibold transition-all ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
       onClick={onClick}
     >
       {isCustomPending ? (
