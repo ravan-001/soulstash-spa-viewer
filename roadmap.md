@@ -10,3 +10,5 @@
 - [x] Remove the Browse the catalog kicker.
 - [x] Refresh Watched and Watchlist action states.
 - [x] Add poster-derived atmospheric color to movie and series detail pages.
+- [x] Smooth the bottom loading indicator across infinite content grids.
+- [x] Add subtle colored texture to non-collection pages and retain poster-derived detail colors.

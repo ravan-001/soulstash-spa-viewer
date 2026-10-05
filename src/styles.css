@@ -860,11 +860,18 @@ button:focus-visible .search-hover-marquee.is-overflowing .search-hover-marquee_
 
 body {
     transition: background 0.3s ease-in-out;
-    background-image: linear-gradient(rgba(9, 10, 12, 0.84), rgba(9, 10, 12, 0.96)), url('/images/dark-bg.png') !important;
     background-color: var(--cinema-bg) !important;
-    background-repeat: repeat !important;
-    background-size: auto !important;
-    background-attachment: fixed !important;
+}
+
+.app-shell--textured {
+  background-color: transparent;
+  background-image:
+    linear-gradient(rgba(9, 10, 12, 0.9), rgba(9, 10, 12, 0.96)),
+    linear-gradient(125deg, rgba(210, 164, 81, 0.12), rgba(112, 174, 184, 0.08) 48%, rgba(212, 154, 138, 0.08)),
+    url('/images/dark-bg.png');
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 100% 100%, 100% 100%, auto;
+  background-attachment: fixed;
 }
 
 
@@ -881,12 +888,68 @@ body.detail-artwork-theme {
   --detail-tint: 18 20 24;
   background-color: rgb(9 10 12) !important;
   background-image:
-    radial-gradient(120% 70% at 50% 0%, rgb(var(--detail-tint) / 0.85) 0%, rgb(var(--detail-tint) / 0.45) 45%, transparent 85%),
-    linear-gradient(to bottom, rgb(var(--detail-tint) / 0.55) 0%, rgb(var(--detail-tint) / 0.25) 60%, rgb(9 10 12) 100%) !important;
-  background-repeat: no-repeat !important;
-  background-size: 100% 100%, 100% 100% !important;
+    linear-gradient(to bottom, rgb(var(--detail-tint) / 0.66), rgb(9 10 12 / 0.94) 82%),
+    linear-gradient(rgb(var(--detail-tint) / 0.16), rgb(var(--detail-tint) / 0.16)),
+    var(--detail-artwork-image),
+    url('/images/dark-bg.png') !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
+  background-position: center top, center top, center top, center !important;
+  background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
   background-attachment: fixed !important;
   transition: background-color 600ms ease;
+}
+
+body.detail-artwork-theme .app-shell--textured {
+  background-image:
+    linear-gradient(rgb(9 10 12 / 0.28), rgb(9 10 12 / 0.62)),
+    url('/images/dark-bg.png');
+  background-repeat: no-repeat, repeat;
+  background-size: 100% 100%, auto;
+  background-blend-mode: normal, soft-light;
+}
+
+.load-more-zone {
+  display: flex;
+  min-height: 72px;
+  margin-top: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-more-indicator {
+  display: inline-flex;
+  min-width: 142px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--cinema-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cinema-surface) 84%, transparent);
+  box-shadow: inset 0 1px rgb(255 255 255 / 0.04), 0 10px 28px rgb(0 0 0 / 0.22);
+  color: var(--cinema-muted);
+  font-size: 13px;
+  font-weight: 650;
+  animation: loadMoreAppear 260ms ease-out both;
+  backdrop-filter: blur(12px);
+}
+
+.load-more-indicator__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--cinema-border-strong);
+  border-top-color: var(--cinema-accent);
+  border-radius: 50%;
+  animation: loadMoreSpin 700ms linear infinite;
+}
+
+@keyframes loadMoreAppear {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loadMoreSpin {
+  to { transform: rotate(360deg); }
 }
 
 .tv-focus-card.is-focused {
@@ -1009,6 +1072,10 @@ body.detail-artwork-theme {
   .card:hover .cardImageWrap,
   .card:focus-visible .cardImageWrap {
     transform: none;
+  }
+  .load-more-indicator,
+  .load-more-indicator__spinner {
+    animation: none;
   }
 }
 
