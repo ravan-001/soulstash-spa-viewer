@@ -98,7 +98,7 @@ export function AppShell() {
   );
 
   return (
-    <div className={`app-shell ${isCollectionRoute ? 'collection-react-shell' : 'app-shell--textured'}`}>
+    <div className={`app-shell app-shell--textured ${isCollectionRoute ? 'collection-react-shell' : ''}`}>
       <ReactNavbar />
       <main className={`app-main ${isAuthRoute ? 'app-main--auth' : ''}`}>
         <div className={`app-container ${isCollectionRoute ? 'app-container--collections' : ''}`}>

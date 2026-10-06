@@ -13,6 +13,7 @@ import { CollectionFilterControls } from './CollectionFilterControls.jsx';
 import { ContentCard } from '../Cards/ContentCard.jsx';
 import { ConfirmModal } from '../Modals/ConfirmModal.jsx';
 import { EditCollectionPosterModal } from '../Modals/EditCollectionPosterModal.jsx';
+import { useArtworkAtmosphere } from '../../../hooks/useArtworkAtmosphere.js';
 
 export function CollectionDetailPane({
   username,
@@ -45,6 +46,7 @@ export function CollectionDetailPane({
   const isLongCollectionName = (collection?.name || '').length > 20;
   const [posterEditOpen, setPosterEditOpen] = useState(false);
   const hasMovies = (collection?.movies || []).length > 0;
+  useArtworkAtmosphere(collection?.name ? collection.banner || FALLBACK_AVATAR : '');
 
   const detailGridRef = useRef(null);
   function buildMobileFilterMenuPosition(trigger) {
@@ -153,19 +155,6 @@ export function CollectionDetailPane({
 
   return (
     <div className="relative isolate">
-      {useBannerAsBackdrop ? (
-        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" style={{ height: '100svh' }}>
-          <img
-            alt="collection backdrop"
-            className="h-full w-full object-cover object-center opacity-30 scale-[1.03]"
-            src={collection.banner || FALLBACK_AVATAR}
-            onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_AVATAR; }}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,7,0.18)_0%,rgba(7,7,7,0.36)_18%,rgba(7,7,7,0.62)_42%,rgba(7,7,7,0.84)_72%,rgba(7,7,7,0.97)_100%)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(255,255,255,0.08),transparent_22%)]"></div>
-        </div>
-      ) : null}
-
       {useBannerAsBackdrop ? (
         <>
           <div className="fixed left-1/2 collection-detail-header-fixed z-[220] w-[min(100vw-20px,1480px)] -translate-x-1/2 sm:w-[min(100vw-32px,1480px)]">
