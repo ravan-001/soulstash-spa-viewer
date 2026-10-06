@@ -13,3 +13,5 @@
 - [x] Smooth the bottom loading indicator across infinite content grids.
 - [x] Add subtle colored texture to non-collection pages and retain poster-derived detail colors.
 - [x] Make texture visible on home/auth pages, color it per movie or series, and strengthen all detail action colors.
+- [ ] Match Collection and Collections backgrounds to the movie/series artwork and colored texture, using the active collection image.
+- [ ] Fade the movie/series background artwork smoothly into the background color at its bottom edge.
