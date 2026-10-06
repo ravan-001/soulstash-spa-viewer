@@ -33,8 +33,16 @@ export function UserProfilePage() {
   }, [username]);
 
   const { data: profilePayload, isLoading: loading, isError, error } = useQuery({
-    queryKey: ['profile', username, isAdminView],
+    queryKey: ['profile', username, isAdminView, auth.isLoggedIn ? auth.username : null],
     queryFn: () => apiFetch(isAdminView ? `/api/admin/users/${encodeURIComponent(username)}/profile` : `/api/user/profile/${encodeURIComponent(username)}`)
+  });
+
+  // The authenticated endpoint verifies identity when the public profile omits isOwner.
+  const { data: verifiedProfile } = useQuery({
+    queryKey: ['profile-session', auth.username],
+    queryFn: () => apiFetch('/api/user/profile'),
+    enabled: auth.isLoggedIn && auth.username === username && !isAdminView,
+    staleTime: 0
   });
 
   const followMutation = useMutation({
@@ -85,7 +93,7 @@ export function UserProfilePage() {
       body: JSON.stringify({ isPublic })
     }),
     onSuccess: (response) => {
-      queryClient.setQueryData(['profile', username, isAdminView], (current) => current ? {
+      queryClient.setQueryData(['profile', username, isAdminView, auth.isLoggedIn ? auth.username : null], (current) => current ? {
         ...current,
         user: { ...current.user, favoritePeoplePublic: response.favoritePeoplePublic === true }
       } : current);
@@ -108,7 +116,10 @@ export function UserProfilePage() {
 
   // When viewing your own profile, sync avatar into localStorage so the navbar updates
   const profileUser = profilePayload?.user;
-  const isOwner = profilePayload?.isOwner && auth.username === username;
+  const verifiedUser = verifiedProfile?.user || verifiedProfile;
+  const isOwner = auth.isLoggedIn && auth.username === username && (
+    profilePayload?.isOwner === true || verifiedUser?.username === username
+  );
   useEffect(() => {
     if (!isOwner || !profileUser) return;
     try {
@@ -141,7 +152,7 @@ export function UserProfilePage() {
   const watched = collections.find((collection) => collection.name === 'Watched');
   const watchlist = collections.find((collection) => collection.name === 'Watchlist');
   const customCollections = collections.filter((collection) => !['Watched', 'Watchlist'].includes(collection.name));
-  const showFavorites = profilePayload?.isOwner || favoritePeople.length;
+  const showFavorites = isOwner || favoritePeople.length;
 
   return (
     <div className="space-y-7">
@@ -273,9 +284,9 @@ export function UserProfilePage() {
         <div className="mb-5 flex items-center justify-between gap-4">
           <SectionHeader
             title="Collections"
-            subtitle={profilePayload.isOwner ? '' : 'Public collections from this profile.'}
+            subtitle={isOwner ? '' : 'Public collections from this profile.'}
           />
-          {profilePayload.isOwner ? (
+          {isOwner ? (
             <button
               type="button"
               className="rounded-full bg-white/[0.08] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/[0.14]"
@@ -372,13 +383,13 @@ export function UserProfilePage() {
                     <p className="text-[11px] text-[#9a9a9a]">{person.known_for_department || 'Known for'}</p>
                   </div>
                 </button>
-                <button
+                {isOwner ? <button
                   type="button"
                   className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
                   onClick={() => setFavoriteRemoveTarget(person)}
                 >
                   <i className="fas fa-times text-[9px]"></i>
-                </button>
+                </button> : null}
               </div>
               ))}
             </div>
