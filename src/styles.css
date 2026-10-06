@@ -953,6 +953,11 @@ body.detail-artwork-theme .app-shell--textured::after {
   background: linear-gradient(to top, color-mix(in srgb, rgb(var(--detail-tint, 18 20 24)) 28%, var(--cinema-bg)), transparent);
 }
 
+.detail-backdrop-artwork {
+  mask-image: linear-gradient(to bottom, black 0%, black 62%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 62%, transparent 100%);
+}
+
 .load-more-zone {
   display: flex;
   min-height: 72px;
