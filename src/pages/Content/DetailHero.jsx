@@ -60,30 +60,6 @@ export function DetailHero({
   const [currentBackdropIndex, setCurrentBackdropIndex] = useState(0);
   const [failedBackdrops, setFailedBackdrops] = useState(new Set());
 
-  // Keep the page artwork separate from the rotating, interactive backdrop.
-  const artworkPath = content.backdrop_path || backdrops[0]?.file_path || content.poster_path;
-  useEffect(() => {
-    if (!artworkPath) return;
-    const body = document.body;
-    let active = true;
-    body.classList.add('detail-artwork-theme');
-    body.style.setProperty('--detail-artwork-image', `url("${imageUrl(artworkPath, 'original')}")`);
-    body.style.setProperty('--detail-artwork-ratio', content.backdrop_path || hasBackdrops ? '1.777778' : '0.666667');
-    const image = new Image();
-    image.onload = () => {
-      if (active && image.naturalHeight > 0) {
-        body.style.setProperty('--detail-artwork-ratio', String(image.naturalWidth / image.naturalHeight));
-      }
-    };
-    image.src = imageUrl(artworkPath, 'original');
-    return () => {
-      active = false;
-      body.classList.remove('detail-artwork-theme');
-      body.style.removeProperty('--detail-artwork-image');
-      body.style.removeProperty('--detail-artwork-ratio');
-    };
-  }, [artworkPath, content.backdrop_path, hasBackdrops]);
-
   useEffect(() => {
     if (!hasBackdrops || backdrops.length <= 1 || isPlayerOpen) return;
     const interval = setInterval(() => {
@@ -110,7 +86,7 @@ export function DetailHero({
     : content.poster_path;
 
   return (
-    <section className="detail-hero relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
+    <section className="relative -mx-4 overflow-hidden bg-transparent sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
       {/* ── Backdrop image + play button ── */}
       <div className="relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
         {hasBackdrops ? (
@@ -145,7 +121,7 @@ export function DetailHero({
           <i className="fas fa-play translate-x-[1px] text-sm lg:text-base" />
         </button>
 
-        <div className="detail-backdrop-fade absolute inset-x-0 bottom-0 h-[65%] z-10 pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-[#080808] via-[#080808]/78 to-transparent z-10" />
       </div>
 
       {/* ── Poster + metadata (below backdrop) ── */}
