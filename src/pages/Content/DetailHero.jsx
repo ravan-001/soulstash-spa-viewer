@@ -28,7 +28,6 @@ import { FALLBACK_AVATAR } from '../../utils/constants.js';
 import { imageUrl } from '../../utils/formatters.js';
 import { ActionButton } from '../../components/ui/ActionButton.jsx';
 import { DetailStat } from '../../components/ui/Cards/DetailStat.jsx';
-import { useArtworkAtmosphere } from '../../hooks/useArtworkAtmosphere.js';
 
 export function DetailHero({
   content,
@@ -61,6 +60,30 @@ export function DetailHero({
   const [currentBackdropIndex, setCurrentBackdropIndex] = useState(0);
   const [failedBackdrops, setFailedBackdrops] = useState(new Set());
 
+  // Keep the page artwork separate from the rotating, interactive backdrop.
+  const artworkPath = content.backdrop_path || backdrops[0]?.file_path || content.poster_path;
+  useEffect(() => {
+    if (!artworkPath) return;
+    const body = document.body;
+    let active = true;
+    body.classList.add('detail-artwork-theme');
+    body.style.setProperty('--detail-artwork-image', `url("${imageUrl(artworkPath, 'original')}")`);
+    body.style.setProperty('--detail-artwork-ratio', content.backdrop_path || hasBackdrops ? '1.777778' : '0.666667');
+    const image = new Image();
+    image.onload = () => {
+      if (active && image.naturalHeight > 0) {
+        body.style.setProperty('--detail-artwork-ratio', String(image.naturalWidth / image.naturalHeight));
+      }
+    };
+    image.src = imageUrl(artworkPath, 'original');
+    return () => {
+      active = false;
+      body.classList.remove('detail-artwork-theme');
+      body.style.removeProperty('--detail-artwork-image');
+      body.style.removeProperty('--detail-artwork-ratio');
+    };
+  }, [artworkPath, content.backdrop_path, hasBackdrops]);
+
   useEffect(() => {
     if (!hasBackdrops || backdrops.length <= 1 || isPlayerOpen) return;
     const interval = setInterval(() => {
@@ -86,15 +109,10 @@ export function DetailHero({
     ? posters[currentPosterIndex].file_path
     : content.poster_path;
 
-  useArtworkAtmosphere(
-    content?.poster_path ? imageUrl(content.poster_path, 'w500') : '',
-    content?.poster_path ? imageUrl(content.poster_path, 'w92') : ''
-  );
-
   return (
-    <section className="relative -mx-4 overflow-hidden bg-transparent sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
+    <section className="detail-hero relative -mx-4 overflow-hidden sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
       {/* ── Backdrop image + play button ── */}
-      <div className="detail-backdrop-artwork relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
+      <div className="relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
         {hasBackdrops ? (
           backdrops.map((backdrop, index) => (
             <img
@@ -127,7 +145,7 @@ export function DetailHero({
           <i className="fas fa-play translate-x-[1px] text-sm lg:text-base" />
         </button>
 
-        <div className="detail-backdrop-fade absolute inset-x-0 bottom-0 h-[48%] z-10" aria-hidden="true" />
+        <div className="detail-backdrop-fade absolute inset-x-0 bottom-0 h-[65%] z-10 pointer-events-none" />
       </div>
 
       {/* ── Poster + metadata (below backdrop) ── */}
@@ -299,7 +317,6 @@ function MobileLayout({
               icon="fas fa-eye"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watched'}
-              tone="watched"
             />
           </div>
           <div className="w-1/2">
@@ -310,7 +327,6 @@ function MobileLayout({
               icon="fas fa-clock"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watchlist'}
-              tone="watchlist"
             />
           </div>
         </div>
@@ -375,7 +391,6 @@ function DesktopLayout({
                 icon="fas fa-eye"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watched'}
-                tone="watched"
               />
             </div>
             <div className="w-1/2">
@@ -386,7 +401,6 @@ function DesktopLayout({
                 icon="fas fa-clock"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watchlist'}
-                tone="watchlist"
               />
             </div>
           </div>
@@ -407,7 +421,7 @@ function SaveButton({ status, pendingAction, onClick }) {
     <button
       type="button"
       disabled={!!pendingAction}
-      className={`action-button action-button--collection ${status.customSaved ? 'is-active' : ''} flex h-[40px] w-full items-center justify-center whitespace-nowrap px-6 font-semibold transition-all ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
+      className={`flex h-[40px] w-full items-center justify-center whitespace-nowrap rounded-full bg-white/10 px-6 text-white font-medium hover:bg-white/20 transition-colors ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
       onClick={onClick}
     >
       {isCustomPending ? (

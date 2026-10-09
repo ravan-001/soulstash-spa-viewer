@@ -2,19 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCachedUserCollections, normalizeCollections, hasCollectionCache } from '../utils/collectionsCache.js';
 import { loadRatingsTable } from '../utils/ratingsCache.js';
 import { loadUserCollections } from '../utils/collectionsApi.js';
-import { apiFetch, getToken } from '../api/client.js';
-
-async function loadCollectionsWithProfileFallback() {
-  const loadedCollections = await loadUserCollections();
-  if (loadedCollections.length) return loadedCollections;
-
-  // Some deployed sessions currently expose the complete collection snapshot
-  // through the authenticated profile response even when the dedicated list
-  // response is empty. Keep the sidebar and selected detail pane in sync.
-  const profile = await apiFetch('/api/user/profile');
-  const profileUser = profile?.user || profile;
-  return Array.isArray(profileUser?.collections) ? profileUser.collections : [];
-}
+import { getToken } from '../api/client.js';
 
 export function useLiveCollections() {
   const [collections, setCollections] = useState(() => normalizeCollections(getCachedUserCollections()));
@@ -36,7 +24,7 @@ export function useLiveCollections() {
       if (!hasCollectionCache()) {
         // Truly no cache at all (first load / logged-out) — must fetch
         setLoading(true);
-        loadCollectionsWithProfileFallback()
+        loadUserCollections()
           .then(applyCollections)
           .catch(() => setLoading(false));
       }
@@ -58,7 +46,7 @@ export function useLiveCollections() {
     function handleAuthChanged() {
       if (getToken()) {
         setLoading(true);
-        loadCollectionsWithProfileFallback()
+        loadUserCollections()
           .then(applyCollections)
           .catch(() => setLoading(false));
       } else {
