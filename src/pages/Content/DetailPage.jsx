@@ -32,7 +32,6 @@ import { PlayerErrorBoundary } from '../../components/player/PlayerErrorBoundary
 import { DetailHero } from './DetailHero.jsx';
 import { SeasonEpisodeSection } from './SeasonEpisodeSection.jsx';
 import { SimilarSection } from './SimilarSection.jsx';
-import { TMDBCollectionSection } from './TMDBCollectionSection.jsx';
 
 import {
   formatRuntime, yearFrom, getLanguageName, getPrimaryCountry,
@@ -253,16 +252,6 @@ export function DetailPage({ type }) {
           <div className="empty-state">No cast information available.</div>
         )}
       </section>
-
-      {/* 4.5. Belongs to Collection (Movies/Series franchise collections) */}
-      {content.belongs_to_collection && (
-        <TMDBCollectionSection
-          collection={content.belongs_to_collection}
-          collections={page.collections}
-          type={type}
-          currentId={id}
-        />
-      )}
 
       {/* 5. Similar Content */}
       <SimilarSection 
