@@ -24,11 +24,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { FALLBACK_AVATAR, FALLBACK_POSTER } from '../../utils/constants.js';
+import { FALLBACK_AVATAR } from '../../utils/constants.js';
 import { imageUrl } from '../../utils/formatters.js';
 import { ActionButton } from '../../components/ui/ActionButton.jsx';
 import { DetailStat } from '../../components/ui/Cards/DetailStat.jsx';
-import { useArtworkAtmosphere } from '../../hooks/useArtworkAtmosphere.js';
 
 export function DetailHero({
   content,
@@ -86,21 +85,10 @@ export function DetailHero({
     ? posters[currentPosterIndex].file_path
     : content.poster_path;
 
-  const fallbackBackdropUrl = content?.backdrop_path
-    ? imageUrl(content.backdrop_path, 'original')
-    : currentPosterPath
-    ? imageUrl(currentPosterPath, 'w780') || imageUrl(currentPosterPath, 'original')
-    : null;
-
-  useArtworkAtmosphere(
-    content?.poster_path ? imageUrl(content.poster_path, 'w500') : '',
-    content?.poster_path ? imageUrl(content.poster_path, 'w92') : ''
-  );
-
   return (
     <section className="relative -mx-4 overflow-hidden bg-transparent sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
       {/* ── Backdrop image + play button ── */}
-      <div className="detail-backdrop-artwork relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
+      <div className="relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
         {hasBackdrops ? (
           backdrops.map((backdrop, index) => (
             <img
@@ -113,22 +101,13 @@ export function DetailHero({
               onError={() => handleBackdropError(index)}
             />
           ))
-        ) : fallbackBackdropUrl ? (
-          <img
-            src={fallbackBackdropUrl}
-            alt={title}
-            className={`absolute inset-0 h-full w-full object-cover ${content?.backdrop_path ? 'object-[center_22%]' : 'object-[center_35%]'}`}
-            onError={(e) => {
-              if (currentPosterPath && e.currentTarget.src !== imageUrl(currentPosterPath, 'w780')) {
-                e.currentTarget.src = imageUrl(currentPosterPath, 'w780');
-                e.currentTarget.className = "absolute inset-0 h-full w-full object-cover object-[center_35%]";
-              } else {
-                e.currentTarget.src = FALLBACK_POSTER;
-              }
-            }}
-          />
         ) : (
-          <div className="absolute inset-0 h-full w-full bg-neutral-900" />
+          <img
+            src={imageUrl(content.backdrop_path, 'original')}
+            alt={title}
+            className="absolute inset-0 h-full w-full object-cover object-[center_22%]"
+            onError={(e) => { e.currentTarget.src = FALLBACK_AVATAR; }}
+          />
         )}
 
         <button
@@ -142,7 +121,7 @@ export function DetailHero({
           <i className="fas fa-play translate-x-[1px] text-sm lg:text-base" />
         </button>
 
-        <div className="detail-backdrop-fade absolute inset-x-0 bottom-0 h-[65%] z-10" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-[#080808] via-[#080808]/78 to-transparent z-10" />
       </div>
 
       {/* ── Poster + metadata (below backdrop) ── */}
@@ -314,7 +293,6 @@ function MobileLayout({
               icon="fas fa-eye"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watched'}
-              tone="watched"
             />
           </div>
           <div className="w-1/2">
@@ -325,7 +303,6 @@ function MobileLayout({
               icon="fas fa-clock"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watchlist'}
-              tone="watchlist"
             />
           </div>
         </div>
@@ -390,7 +367,6 @@ function DesktopLayout({
                 icon="fas fa-eye"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watched'}
-                tone="watched"
               />
             </div>
             <div className="w-1/2">
@@ -401,7 +377,6 @@ function DesktopLayout({
                 icon="fas fa-clock"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watchlist'}
-                tone="watchlist"
               />
             </div>
           </div>
@@ -422,7 +397,7 @@ function SaveButton({ status, pendingAction, onClick }) {
     <button
       type="button"
       disabled={!!pendingAction}
-      className={`action-button action-button--collection ${status.customSaved ? 'is-active' : ''} flex h-[40px] w-full items-center justify-center whitespace-nowrap px-6 font-semibold transition-all ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
+      className={`flex h-[40px] w-full items-center justify-center whitespace-nowrap rounded-full bg-white/10 px-6 text-white font-medium hover:bg-white/20 transition-colors ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
       onClick={onClick}
     >
       {isCustomPending ? (

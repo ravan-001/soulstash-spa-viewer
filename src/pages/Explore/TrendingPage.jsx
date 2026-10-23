@@ -95,12 +95,9 @@ export function TrendingPage() {
 
           {/* Sentinel element — observed to trigger next page */}
           {hasNextPage && (
-            <div ref={sentinelRef} className="load-more-zone">
+            <div ref={sentinelRef} className="mt-8 flex justify-center h-12">
               {isFetchingNextPage && (
-                <div className="load-more-indicator" role="status" aria-live="polite">
-                  <span className="load-more-indicator__spinner" aria-hidden="true" />
-                  <span>Loading more</span>
-                </div>
+                <div className="w-6 h-6 border-2 border-white/20 border-t-white/80 rounded-full animate-spin self-center" />
               )}
             </div>
           )}

@@ -32,7 +32,6 @@ import { PlayerErrorBoundary } from '../../components/player/PlayerErrorBoundary
 import { DetailHero } from './DetailHero.jsx';
 import { SeasonEpisodeSection } from './SeasonEpisodeSection.jsx';
 import { SimilarSection } from './SimilarSection.jsx';
-import { TMDBCollectionSection } from './TMDBCollectionSection.jsx';
 
 import {
   formatRuntime, yearFrom, getLanguageName, getPrimaryCountry,
@@ -105,26 +104,20 @@ export function DetailPage({ type }) {
 
   function handlePlayClick() {
     const tmdbId = content?.id || id;
-    const originalTitle = content?.original_title || content?.original_name || '';
-    const originalName = content?.original_name || content?.original_title || '';
-    const yearVal = content?.release_date ? parseInt(content.release_date.slice(0, 4)) : (content?.first_air_date ? parseInt(content.first_air_date.slice(0, 4)) : null);
     if (type === 'movie') {
       page.setPlayerRequest(
-        createPlayerRequest({ mediaType: 'movie', tmdbId, imdbId: content?.imdb_id, title, originalTitle, originalName, seriesTitle: title, year: yearVal })
+        createPlayerRequest({ mediaType: 'movie', tmdbId, imdbId: content?.imdb_id, title })
       );
     } else {
       const season = page.selectedSeason || 1;
       const ep = page.seasonDetails?.episodes?.[0]?.episode_number || 1;
       page.setPlayerRequest(
-        createPlayerRequest({ mediaType: 'series', tmdbId, seasonNumber: season, episodeNumber: ep, imdbId: content?.imdb_id, title, originalTitle, originalName, seriesTitle: title, year: yearVal })
+        createPlayerRequest({ mediaType: 'series', tmdbId, seasonNumber: season, episodeNumber: ep, imdbId: content?.imdb_id, title })
       );
     }
   }
 
   function handlePlayEpisode(episode) {
-    const originalTitle = content?.original_title || content?.original_name || '';
-    const originalName = content?.original_name || content?.original_title || '';
-    const yearVal = content?.release_date ? parseInt(content.release_date.slice(0, 4)) : (content?.first_air_date ? parseInt(content.first_air_date.slice(0, 4)) : null);
     page.setPlayerRequest(
       createPlayerRequest({
         mediaType: 'series',
@@ -132,11 +125,7 @@ export function DetailPage({ type }) {
         seasonNumber: episode.season_number,
         episodeNumber: episode.episode_number,
         imdbId: content?.imdb_id,
-        title: `${title} S${episode.season_number}E${episode.episode_number}`,
-        originalTitle,
-        originalName,
-        seriesTitle: title,
-        year: yearVal
+        title: `${title} S${episode.season_number}E${episode.episode_number}`
       })
     );
   }
@@ -263,16 +252,6 @@ export function DetailPage({ type }) {
           <div className="empty-state">No cast information available.</div>
         )}
       </section>
-
-      {/* 4.5. Belongs to Collection (Movies/Series franchise collections) */}
-      {content.belongs_to_collection && (
-        <TMDBCollectionSection
-          collection={content.belongs_to_collection}
-          collections={page.collections}
-          type={type}
-          currentId={id}
-        />
-      )}
 
       {/* 5. Similar Content */}
       <SimilarSection 
