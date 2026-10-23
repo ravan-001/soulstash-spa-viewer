@@ -1024,6 +1024,12 @@ body.detail-artwork-theme {
   }
 }
 
+@media (max-width: 1023px) {
+  body.detail-artwork-theme .app-shell--textured::after {
+    display: none !important;
+  }
+}
+
 body.detail-artwork-theme .app-shell--textured {
   --page-texture-tint: var(--detail-tint);
   background-image:
@@ -1271,5 +1277,4 @@ body.detail-artwork-theme .app-shell--textured::after {
   opacity: 1;
 }
 
-body.detail-artwork-theme .app-shell,
-body.collection-artwork-theme .app-shell { background-color: transparent !important; }
+body.detail-artwork-theme .app-shell { background-color: transparent; }
