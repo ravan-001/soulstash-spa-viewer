@@ -24,10 +24,11 @@
  */
 
 import { useState, useEffect } from 'react';
-import { FALLBACK_AVATAR } from '../../utils/constants.js';
+import { FALLBACK_AVATAR, FALLBACK_POSTER } from '../../utils/constants.js';
 import { imageUrl } from '../../utils/formatters.js';
 import { ActionButton } from '../../components/ui/ActionButton.jsx';
 import { DetailStat } from '../../components/ui/Cards/DetailStat.jsx';
+import { useArtworkAtmosphere } from '../../hooks/useArtworkAtmosphere.js';
 
 export function DetailHero({
   content,
@@ -58,24 +59,41 @@ export function DetailHero({
   const backdrops = (content?.images?.backdrops || []).slice(0, 5);
   const hasBackdrops = backdrops.length > 0;
   const [currentBackdropIndex, setCurrentBackdropIndex] = useState(0);
-  const [failedBackdrops, setFailedBackdrops] = useState(new Set());
+  const [loadedBackdrops, setLoadedBackdrops] = useState(() => new Set([0]));
+  const [failedBackdrops, setFailedBackdrops] = useState(() => new Set());
 
+  // Preload backdrops so they never appear half-loaded
+  useEffect(() => {
+    if (!hasBackdrops) return;
+    backdrops.forEach((backdrop, idx) => {
+      const url = imageUrl(backdrop.file_path, 'w1280');
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        setLoadedBackdrops((prev) => new Set(prev).add(idx));
+      };
+      img.onerror = () => {
+        setFailedBackdrops((prev) => new Set(prev).add(idx));
+      };
+    });
+  }, [backdrops, hasBackdrops]);
+
+  // Rotate backdrops smoothly, only transitioning to fully loaded images
   useEffect(() => {
     if (!hasBackdrops || backdrops.length <= 1 || isPlayerOpen) return;
     const interval = setInterval(() => {
       setCurrentBackdropIndex((prev) => {
-        let nextIndex = (prev + 1) % backdrops.length;
-        // Skip failed backdrops
-        let attempts = 0;
-        while (failedBackdrops.has(nextIndex) && attempts < backdrops.length) {
-          nextIndex = (nextIndex + 1) % backdrops.length;
-          attempts++;
+        for (let step = 1; step <= backdrops.length; step++) {
+          const nextIdx = (prev + step) % backdrops.length;
+          if (!failedBackdrops.has(nextIdx) && (loadedBackdrops.has(nextIdx) || step === backdrops.length)) {
+            return nextIdx;
+          }
         }
-        return nextIndex;
+        return prev;
       });
-    }, 3500);
+    }, 5500);
     return () => clearInterval(interval);
-  }, [backdrops.length, failedBackdrops, hasBackdrops, isPlayerOpen]);
+  }, [backdrops.length, failedBackdrops, loadedBackdrops, hasBackdrops, isPlayerOpen]);
 
   const handleBackdropError = (index) => {
     setFailedBackdrops(prev => new Set(prev).add(index));
@@ -85,29 +103,56 @@ export function DetailHero({
     ? posters[currentPosterIndex].file_path
     : content.poster_path;
 
+  const fallbackBackdropUrl = content?.backdrop_path
+    ? imageUrl(content.backdrop_path, 'w1280')
+    : currentPosterPath
+    ? imageUrl(currentPosterPath, 'w780') || imageUrl(currentPosterPath, 'w1280')
+    : null;
+
+  useArtworkAtmosphere(
+    content?.poster_path ? imageUrl(content.poster_path, 'w500') : '',
+    content?.poster_path ? imageUrl(content.poster_path, 'w92') : ''
+  );
+
   return (
     <section className="relative -mx-4 overflow-hidden bg-transparent sm:mx-0 sm:rounded-[28px] sm:border sm:border-white/10">
       {/* ── Backdrop image + play button ── */}
-      <div className="relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
+      <div className="detail-backdrop-artwork relative aspect-[1.6/1] sm:aspect-[2.1/1] lg:aspect-[2.68/1] w-full overflow-hidden bg-black">
         {hasBackdrops ? (
-          backdrops.map((backdrop, index) => (
-            <img
-              key={backdrop.file_path}
-              src={imageUrl(backdrop.file_path, 'original')}
-              alt={`${title} backdrop ${index + 1}`}
-              className={`absolute inset-0 h-full w-full object-cover object-[center_22%] transition-opacity duration-1000 ease-in-out ${
-                index === currentBackdropIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-              onError={() => handleBackdropError(index)}
-            />
-          ))
-        ) : (
+          backdrops.map((backdrop, index) => {
+            const isCurrent = index === currentBackdropIndex;
+            return (
+              <img
+                key={backdrop.file_path}
+                src={imageUrl(backdrop.file_path, 'w1280')}
+                alt={`${title} backdrop ${index + 1}`}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                className={`absolute inset-0 h-full w-full object-cover object-[center_22%] transition-opacity duration-[1400ms] ease-in-out will-change-[opacity] ${
+                  isCurrent ? 'opacity-100 z-[2]' : 'opacity-0 z-[1] pointer-events-none'
+                }`}
+                onLoad={() => setLoadedBackdrops((prev) => new Set(prev).add(index))}
+                onError={() => handleBackdropError(index)}
+              />
+            );
+          })
+        ) : fallbackBackdropUrl ? (
           <img
-            src={imageUrl(content.backdrop_path, 'original')}
+            src={fallbackBackdropUrl}
             alt={title}
-            className="absolute inset-0 h-full w-full object-cover object-[center_22%]"
-            onError={(e) => { e.currentTarget.src = FALLBACK_AVATAR; }}
+            decoding="async"
+            className={`absolute inset-0 h-full w-full object-cover ${content?.backdrop_path ? 'object-[center_22%]' : 'object-[center_35%]'}`}
+            onError={(e) => {
+              if (currentPosterPath && e.currentTarget.src !== imageUrl(currentPosterPath, 'w780')) {
+                e.currentTarget.src = imageUrl(currentPosterPath, 'w780');
+                e.currentTarget.className = "absolute inset-0 h-full w-full object-cover object-[center_35%]";
+              } else {
+                e.currentTarget.src = FALLBACK_POSTER;
+              }
+            }}
           />
+        ) : (
+          <div className="absolute inset-0 h-full w-full bg-neutral-900" />
         )}
 
         <button
@@ -121,7 +166,7 @@ export function DetailHero({
           <i className="fas fa-play translate-x-[1px] text-sm lg:text-base" />
         </button>
 
-        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-[#080808] via-[#080808]/78 to-transparent z-10" />
+        <div className="detail-backdrop-fade absolute inset-x-0 bottom-0 h-[42%] sm:h-[46%] z-10" aria-hidden="true" />
       </div>
 
       {/* ── Poster + metadata (below backdrop) ── */}
@@ -293,6 +338,7 @@ function MobileLayout({
               icon="fas fa-eye"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watched'}
+              tone="watched"
             />
           </div>
           <div className="w-1/2">
@@ -303,6 +349,7 @@ function MobileLayout({
               icon="fas fa-clock"
               activeIcon="fas fa-check"
               loading={pendingAction === 'Watchlist'}
+              tone="watchlist"
             />
           </div>
         </div>
@@ -367,6 +414,7 @@ function DesktopLayout({
                 icon="fas fa-eye"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watched'}
+                tone="watched"
               />
             </div>
             <div className="w-1/2">
@@ -377,6 +425,7 @@ function DesktopLayout({
                 icon="fas fa-clock"
                 activeIcon="fas fa-check"
                 loading={pendingAction === 'Watchlist'}
+                tone="watchlist"
               />
             </div>
           </div>
@@ -397,7 +446,7 @@ function SaveButton({ status, pendingAction, onClick }) {
     <button
       type="button"
       disabled={!!pendingAction}
-      className={`flex h-[40px] w-full items-center justify-center whitespace-nowrap rounded-full bg-white/10 px-6 text-white font-medium hover:bg-white/20 transition-colors ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
+      className={`action-button action-button--collection ${status.customSaved ? 'is-active' : ''} flex h-[40px] w-full items-center justify-center whitespace-nowrap px-6 font-semibold transition-all ${pendingAction ? 'opacity-70 cursor-wait' : ''}`}
       onClick={onClick}
     >
       {isCustomPending ? (
