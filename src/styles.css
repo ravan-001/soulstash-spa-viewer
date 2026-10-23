@@ -146,16 +146,17 @@ body.collection-artwork-theme {
     var(--collection-artwork-image, none),
     url('/images/dark-bg.png') !important;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
-  background-position: center top, center top, center top, center !important;
-  background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
-  background-attachment: fixed !important;
+  background-position: center top, center top, center center, center !important;
+  background-size: 100% 100%, 100% 100%, cover, auto !important;
+  background-attachment: scroll, scroll, fixed, repeat !important;
   transition: background-color 600ms ease;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   body.collection-artwork-theme {
-    background-size: 100% 100%, 100% 100%, cover, auto !important;
-    background-position: center top, center top, center center, center !important;
+    background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
+    background-position: center top, center top, center top, center !important;
+    background-attachment: fixed !important;
   }
 }
 
@@ -999,10 +1000,24 @@ body.detail-artwork-theme {
     var(--detail-artwork-image),
     url('/images/dark-bg.png') !important;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
-  background-position: center top, center top, center top, center !important;
-  background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
-  background-attachment: fixed !important;
+  background-position: center top, center top, center center, center !important;
+  background-size: 100% 100%, 100% 100%, cover, auto !important;
+  background-attachment: scroll, scroll, fixed, repeat !important;
   transition: background-color 600ms ease;
+}
+
+@media (min-width: 768px) {
+  body.detail-artwork-theme {
+    background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
+    background-position: center top, center top, center top, center !important;
+    background-attachment: fixed !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body.detail-artwork-theme .app-shell--textured::after {
+    display: none !important;
+  }
 }
 
 body.detail-artwork-theme .app-shell--textured {
@@ -1252,4 +1267,5 @@ body.detail-artwork-theme .app-shell--textured::after {
   opacity: 1;
 }
 
-body.detail-artwork-theme .app-shell { background-color: transparent; }
+body.detail-artwork-theme .app-shell,
+body.collection-artwork-theme .app-shell { background-color: transparent !important; }
