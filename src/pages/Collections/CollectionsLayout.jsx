@@ -15,8 +15,9 @@ export function CollectionsLayout() {
   const { navigate } = page;
 
   // Derive a poster path from the selected collection (banner or first movie poster)
+  // or fall back to the first available collection for the collections overview on mobile
   const bgPosterPath = useMemo(() => {
-    const coll = page.selectedCollection;
+    const coll = page.selectedCollection || page.filteredCollections?.[0] || page.collections?.[0];
     if (!coll) return null;
     if (coll.banner && typeof coll.banner === 'string' && coll.banner.trim() && !coll.banner.includes('b23d0bfcaa8b')) {
       return coll.banner;
@@ -26,11 +27,11 @@ export function CollectionsLayout() {
     const firstWithPoster = movies.find(m => m.poster_path);
     const item = firstWithPoster || movies[0];
     return item?.poster_path || null;
-  }, [page.selectedCollection]);
+  }, [page.selectedCollection, page.filteredCollections, page.collections]);
 
   // Apply body class + CSS vars — EXACTLY like DetailHero does for movie/series pages.
   useEffect(() => {
-    const hasCollection = !!page.selectedCollection;
+    const hasCollection = !!page.selectedCollection || !!(page.collections && page.collections.length);
     if (!hasCollection) {
       document.body.style.removeProperty('--collection-artwork-image');
       document.body.style.removeProperty('--collection-tint');

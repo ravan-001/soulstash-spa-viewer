@@ -152,6 +152,15 @@ body.collection-artwork-theme {
   transition: background-color 600ms ease;
 }
 
+/* Mobile full-screen poster stretch & fit for collections and collection page */
+@media (max-width: 768px) {
+  body.collection-artwork-theme {
+    background-size: 100% 100%, 100% 100%, cover, auto !important;
+    background-position: center top, center top, center center, center !important;
+    background-attachment: fixed, fixed, fixed, repeat !important;
+  }
+}
+
 body.collection-artwork-theme .collection-react-shell {
   --page-texture-tint: var(--collection-tint);
   position: relative;
@@ -175,6 +184,23 @@ body.collection-artwork-theme .collection-react-shell::before {
   background-size: auto;
   background-blend-mode: luminosity;
   opacity: 0.48;
+}
+
+/* On mobile view, stretch the background poster across the entire screen viewport so it never sits only at the top */
+@media (max-width: 768px) {
+  body.collection-artwork-theme .collection-react-shell::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image: var(--collection-artwork-image, none);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    transform: scale(1.04);
+  }
 }
 
 
@@ -1030,8 +1056,8 @@ body.detail-artwork-theme .app-shell--textured::after {
 }
 
 .detail-backdrop-artwork {
-  mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 74%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 74%, transparent 100%);
 }
 
 .detail-backdrop-fade {
