@@ -152,6 +152,13 @@ body.collection-artwork-theme {
   transition: background-color 600ms ease;
 }
 
+@media (max-width: 768px) {
+  body.collection-artwork-theme {
+    background-size: 100% 100%, 100% 100%, cover, auto !important;
+    background-position: center top, center top, center center, center !important;
+  }
+}
+
 body.collection-artwork-theme .collection-react-shell {
   --page-texture-tint: var(--collection-tint);
   position: relative;
