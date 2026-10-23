@@ -135,70 +135,46 @@
 }
 
 /* ── Collection Artwork Background Theme ────────────────────────────────────
-   The poster image is intentionally NOT placed on body — doing so on mobile
-   causes it to render only at the viewport top (body bg is relative to viewport
-   but doesn't scroll with content, and iOS ignores background-attachment:fixed).
-   Instead the artwork lives in .collection-react-shell::before which is a real
-   DOM element and behaves consistently across all browsers/devices.
+   EXACT mirror of detail-artwork-theme used for movie/series pages.
    ──────────────────────────────────────────────────────────────────────── */
 body.collection-artwork-theme {
   --collection-tint: 130 98 62;
   background-color: rgb(9 10 12) !important;
-  background-image: url('/images/dark-bg.png') !important;
-  background-repeat: repeat !important;
-  background-size: auto !important;
+  background-image:
+    linear-gradient(to bottom, rgb(var(--collection-tint) / 0.66), rgb(9 10 12 / 0.94) 82%),
+    linear-gradient(rgb(var(--collection-tint) / 0.16), rgb(var(--collection-tint) / 0.16)),
+    var(--collection-artwork-image, none),
+    url('/images/dark-bg.png') !important;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
+  background-position: center top, center top, center top, center !important;
+  background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
+  background-attachment: fixed !important;
   transition: background-color 600ms ease;
 }
 
-/* ── Shell acts as the stacking context for all artwork layers ── */
 body.collection-artwork-theme .collection-react-shell {
   --page-texture-tint: var(--collection-tint);
   position: relative;
   isolation: isolate;
+  background-image:
+    linear-gradient(rgb(var(--collection-tint) / 0.12), rgb(9 10 12 / 0.54));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
-/* Layer 1 (lowest): full-screen poster art — fixed so it doesn't scroll */
+/* Texture grain layer — exact mirror of detail-artwork-theme treatment */
 body.collection-artwork-theme .collection-react-shell::before {
   content: '';
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  z-index: -3;
+  z-index: -1;
   pointer-events: none;
-  background-image: var(--collection-artwork-image, none);
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  opacity: 0.68;
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Layer 2: tint gradient that sits on top of the poster */
-body.collection-artwork-theme .collection-react-shell::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  z-index: -2;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--collection-tint, 130 98 62) / 0.32) 0%,
-    rgb(9 10 12 / 0.88) 75%
-  );
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Ensure the dark texture layer doesn't strip saturation or turn artwork into black & white */
-body.collection-artwork-theme .app-shell--textured::before {
-  background-blend-mode: normal !important;
-  opacity: 0.16 !important;
+  background-color: rgb(var(--collection-tint, 130 98 62));
+  background-image: url('/images/dark-bg.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-blend-mode: luminosity;
+  opacity: 0.48;
 }
 
 
@@ -1049,13 +1025,13 @@ body.detail-artwork-theme .app-shell--textured::after {
   background-size: 100% auto;
   background-repeat: no-repeat;
   opacity: 0.38;
-  mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 48%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 48%, transparent 100%);
 }
 
 .detail-backdrop-artwork {
-  mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
 }
 
 .detail-backdrop-fade {

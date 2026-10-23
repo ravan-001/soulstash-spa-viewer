@@ -13,10 +13,7 @@ import { CollectionFilterControls } from './CollectionFilterControls.jsx';
 import { ContentCard } from '../Cards/ContentCard.jsx';
 import { ConfirmModal } from '../Modals/ConfirmModal.jsx';
 import { EditCollectionPosterModal } from '../Modals/EditCollectionPosterModal.jsx';
-// Note: useArtworkAtmosphere removed from CollectionDetailPane — collection pages
-// manage their own collection-artwork-theme via CollectionsLayout / UserCollectionDetailPage.
-// That hook used to add detail-artwork-theme which caused a duplicate background
-// (cropped bright poster) at the top of mobile screens.
+import { useArtworkAtmosphere } from '../../../hooks/useArtworkAtmosphere.js';
 
 export function CollectionDetailPane({
   username,
@@ -49,6 +46,7 @@ export function CollectionDetailPane({
   const isLongCollectionName = (collection?.name || '').length > 20;
   const [posterEditOpen, setPosterEditOpen] = useState(false);
   const hasMovies = (collection?.movies || []).length > 0;
+  useArtworkAtmosphere(collection?.name ? collection.banner || FALLBACK_AVATAR : '');
 
   const detailGridRef = useRef(null);
   function buildMobileFilterMenuPosition(trigger) {
@@ -249,12 +247,12 @@ export function CollectionDetailPane({
           <div className="collection-detail-header-spacer"></div>
         </>
       ) : (
-        <div className="w-full relative overflow-hidden rounded-[26px] mb-2 md:mb-0 md:aspect-[21/9] md:min-h-[156px] min-h-[96px] shadow-none md:shadow-[0_18px_40px_rgba(0,0,0,0.24)] bg-transparent md:bg-black/40">
-          <img alt="collection banner" className="hidden md:block absolute inset-0 h-full w-full object-cover"
+        <div className="w-full aspect-[21/9] min-h-[200px] md:min-h-[156px] rounded-[26px] mb-0 relative overflow-hidden shadow-[0_18px_40px_rgba(0,0,0,0.24)]">
+          <img alt="collection banner" className="absolute inset-0 h-full w-full object-cover"
             src={collection.banner || FALLBACK_AVATAR}
             onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = FALLBACK_AVATAR; }} />
-          <div className="hidden md:block absolute inset-0" aria-hidden="true" style={{ background: 'linear-gradient(180deg, rgba(8,8,8,0.02) 0%, rgba(8,8,8,0.12) 30%, rgba(8,8,8,0.42) 62%, rgba(8,8,8,0.78) 84%, rgba(8,8,8,0.96) 100%)' }}></div>
-          <div className="hidden md:block absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_28%),radial-gradient(circle_at_left_center,rgba(150,123,255,0.08),transparent_30%)]"></div>
+          <div className="absolute inset-0" aria-hidden="true" style={{ background: 'linear-gradient(180deg, rgba(8,8,8,0.02) 0%, rgba(8,8,8,0.12) 30%, rgba(8,8,8,0.42) 62%, rgba(8,8,8,0.78) 84%, rgba(8,8,8,0.96) 100%)' }}></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_28%),radial-gradient(circle_at_left_center,rgba(150,123,255,0.08),transparent_30%)]"></div>
 
           <button type="button"
             className={`absolute top-4 left-4 bg-black/70 p-2.5 rounded-full hover:bg-black/90 transition-colors z-10 focus:outline-none focus:ring-2 focus:ring-white ${!onBackToCollections && !useBannerAsBackdrop ? 'lg:hidden flex' : 'flex'}`}
