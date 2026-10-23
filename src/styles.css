@@ -135,34 +135,49 @@
 }
 
 /* ── Collection Artwork Background Theme ────────────────────────────────────
-   EXACT mirror of detail-artwork-theme used for movie/series pages.
+   The poster image is intentionally NOT placed on body — doing so on mobile
+   causes it to render only at the viewport top (body bg is relative to viewport
+   but doesn't scroll with content, and iOS ignores background-attachment:fixed).
+   Instead the artwork lives in .collection-react-shell::before which is a real
+   DOM element and behaves consistently across all browsers/devices.
    ──────────────────────────────────────────────────────────────────────── */
 body.collection-artwork-theme {
   --collection-tint: 130 98 62;
   background-color: rgb(9 10 12) !important;
-  background-image:
-    linear-gradient(to bottom, rgb(var(--collection-tint) / 0.66), rgb(9 10 12 / 0.94) 82%),
-    linear-gradient(rgb(var(--collection-tint) / 0.16), rgb(var(--collection-tint) / 0.16)),
-    var(--collection-artwork-image, none),
-    url('/images/dark-bg.png') !important;
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
-  background-position: center top, center top, center top, center !important;
-  background-size: 100% 100%, 100% 100%, cover, auto !important;
-  background-attachment: fixed !important;
+  background-image: url('/images/dark-bg.png') !important;
+  background-repeat: repeat !important;
+  background-size: auto !important;
   transition: background-color 600ms ease;
 }
 
-/* Mobile full-screen poster stretch & fit for collections and collection page */
-@media (max-width: 768px) {
-  body.collection-artwork-theme {
-    background-size: 100% 100%, 100% 100%, cover, auto !important;
-    background-position: center top, center top, center center, center !important;
-    background-attachment: scroll, scroll, scroll, repeat !important;
-  }
+/* ── Shell acts as the stacking context for all artwork layers ── */
+body.collection-artwork-theme .collection-react-shell {
+  --page-texture-tint: var(--collection-tint);
+  position: relative;
+  isolation: isolate;
 }
 
-/* Dedicated full-bleed background layers on mobile & desktop collection views */
-body.collection-artwork-theme::before {
+/* Layer 1 (lowest): full-screen poster art — fixed so it doesn't scroll */
+body.collection-artwork-theme .collection-react-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: -3;
+  pointer-events: none;
+  background-image: var(--collection-artwork-image, none);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.55;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Layer 2: tint gradient that sits on top of the poster */
+body.collection-artwork-theme .collection-react-shell::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -171,54 +186,14 @@ body.collection-artwork-theme::before {
   height: 100dvh;
   z-index: -2;
   pointer-events: none;
-  background-image: var(--collection-artwork-image, none);
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  opacity: 0.32;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--collection-tint, 130 98 62) / 0.60) 0%,
+    rgb(9 10 12 / 0.96) 80%
+  );
   transform: translateZ(0);
+  will-change: transform;
 }
-
-body.collection-artwork-theme::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgb(var(--collection-tint, 130 98 62) / 0.65), rgb(9 10 12 / 0.95) 85%);
-  transform: translateZ(0);
-}
-
-body.collection-artwork-theme .collection-react-shell {
-  --page-texture-tint: var(--collection-tint);
-  position: relative;
-  isolation: isolate;
-  background-image:
-    linear-gradient(rgb(var(--collection-tint) / 0.12), rgb(9 10 12 / 0.54));
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-
-/* Texture grain layer — exact mirror of detail-artwork-theme treatment */
-body.collection-artwork-theme .collection-react-shell::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-color: rgb(var(--collection-tint, 130 98 62));
-  background-image: url('/images/dark-bg.png');
-  background-repeat: repeat;
-  background-size: auto;
-  background-blend-mode: luminosity;
-  opacity: 0.48;
-}
-
-/* On mobile view, stretch the background poster across the entire screen viewport so it never sits only at the top */
-
 
 
 .collection-detail-header-fixed {
