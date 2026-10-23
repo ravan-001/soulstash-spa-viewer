@@ -147,7 +147,7 @@ body.collection-artwork-theme {
     url('/images/dark-bg.png') !important;
   background-repeat: no-repeat, no-repeat, no-repeat, repeat !important;
   background-position: center top, center top, center top, center !important;
-  background-size: 100% 100%, 100% 100%, min(100vw, 1200px) auto, auto !important;
+  background-size: 100% 100%, 100% 100%, cover, auto !important;
   background-attachment: fixed !important;
   transition: background-color 600ms ease;
 }
@@ -157,8 +157,39 @@ body.collection-artwork-theme {
   body.collection-artwork-theme {
     background-size: 100% 100%, 100% 100%, cover, auto !important;
     background-position: center top, center top, center center, center !important;
-    background-attachment: fixed, fixed, fixed, repeat !important;
+    background-attachment: scroll, scroll, scroll, repeat !important;
   }
+}
+
+/* Dedicated full-bleed background layers on mobile & desktop collection views */
+body.collection-artwork-theme::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: -2;
+  pointer-events: none;
+  background-image: var(--collection-artwork-image, none);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.32;
+  transform: translateZ(0);
+}
+
+body.collection-artwork-theme::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(var(--collection-tint, 130 98 62) / 0.65), rgb(9 10 12 / 0.95) 85%);
+  transform: translateZ(0);
 }
 
 body.collection-artwork-theme .collection-react-shell {
@@ -187,21 +218,7 @@ body.collection-artwork-theme .collection-react-shell::before {
 }
 
 /* On mobile view, stretch the background poster across the entire screen viewport so it never sits only at the top */
-@media (max-width: 768px) {
-  body.collection-artwork-theme .collection-react-shell::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    pointer-events: none;
-    background-image: var(--collection-artwork-image, none);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    opacity: 0.7;
-    transform: scale(1.04);
-  }
-}
+
 
 
 .collection-detail-header-fixed {
@@ -1051,13 +1068,13 @@ body.detail-artwork-theme .app-shell--textured::after {
   background-size: 100% auto;
   background-repeat: no-repeat;
   opacity: 0.38;
-  mask-image: linear-gradient(to bottom, black 0%, black 48%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 48%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
 }
 
 .detail-backdrop-artwork {
-  mask-image: linear-gradient(to bottom, black 0%, black 74%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 74%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 82%, transparent 100%);
 }
 
 .detail-backdrop-fade {

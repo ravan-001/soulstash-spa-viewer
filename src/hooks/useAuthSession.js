@@ -40,10 +40,10 @@ export function useAuthSession() {
       // profile here so every layout (including the navbar and admin page) has
       // the same user data without requiring a visit to the profile route.
       if (token && username) {
-        apiFetch(`/api/user/profile/${encodeURIComponent(username)}`)
+        apiFetch('/api/user/profile')
           .then((profileResponse) => {
             const profile = profileResponse?.user || profileResponse;
-            if (disposed || !profile) return;
+            if (disposed || !profile || getToken() !== token || getCurrentUsername() !== username) return;
             const current = (() => {
               try { return JSON.parse(localStorage.getItem('user') || '{}'); } catch { return {}; }
             })();
