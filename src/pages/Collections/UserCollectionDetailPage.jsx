@@ -71,15 +71,21 @@ export function UserCollectionDetailPage() {
   // Derive background artwork for single collection page
   const singleCollectionBg = useMemo(() => {
     if (!collection) return null;
-    if (collection.banner && typeof collection.banner === 'string' && collection.banner.trim() && !collection.banner.includes('b23d0bfcaa8b')) {
-      return collection.banner;
+    const isDefault = ['Watched', 'Watchlist'].includes(collection.name);
+    if (!isDefault && collection.banner && typeof collection.banner === 'string' && collection.banner.trim()) {
+      const b = collection.banner.toLowerCase();
+      if (!b.includes('b23d0bfcaa8b') && !b.includes('avatar') && !b.includes('default') && !b.includes('fallback')) {
+        return collection.banner;
+      }
     }
     const movieItems = collection.movies;
-    if (!movieItems || movieItems.length === 0) return null;
-    const firstWithBackdrop = movieItems.find(m => m.backdrop_path);
-    const firstWithPoster = movieItems.find(m => m.poster_path);
-    const item = firstWithBackdrop || firstWithPoster || movieItems[0];
-    return item?.backdrop_path || item?.poster_path || null;
+    if (Array.isArray(movieItems) && movieItems.length > 0) {
+      const firstWithBackdrop = movieItems.find(m => m.backdrop_path);
+      const firstWithPoster = movieItems.find(m => m.poster_path);
+      const item = firstWithBackdrop || firstWithPoster || movieItems[0];
+      return item?.backdrop_path || item?.poster_path || null;
+    }
+    return null;
   }, [collection]);
 
   useEffect(() => {

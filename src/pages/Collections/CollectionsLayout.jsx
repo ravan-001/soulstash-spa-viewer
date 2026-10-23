@@ -19,14 +19,21 @@ export function CollectionsLayout() {
   const bgPosterPath = useMemo(() => {
     const coll = page.selectedCollection || page.filteredCollections?.[0] || page.collections?.[0];
     if (!coll) return null;
-    if (coll.banner && typeof coll.banner === 'string' && coll.banner.trim() && !coll.banner.includes('b23d0bfcaa8b')) {
-      return coll.banner;
+    const isDefault = ['Watched', 'Watchlist'].includes(coll.name);
+    if (!isDefault && coll.banner && typeof coll.banner === 'string' && coll.banner.trim()) {
+      const b = coll.banner.toLowerCase();
+      if (!b.includes('b23d0bfcaa8b') && !b.includes('avatar') && !b.includes('default') && !b.includes('fallback')) {
+        return coll.banner;
+      }
     }
     const movies = coll.movies;
-    if (!movies || movies.length === 0) return null;
-    const firstWithPoster = movies.find(m => m.poster_path);
-    const item = firstWithPoster || movies[0];
-    return item?.poster_path || null;
+    if (Array.isArray(movies) && movies.length > 0) {
+      const withBackdrop = movies.find(m => m.backdrop_path);
+      const withPoster = movies.find(m => m.poster_path);
+      const item = withBackdrop || withPoster || movies[0];
+      return item?.backdrop_path || item?.poster_path || null;
+    }
+    return null;
   }, [page.selectedCollection, page.filteredCollections, page.collections]);
 
   // Apply body class + CSS vars — EXACTLY like DetailHero does for movie/series pages.
