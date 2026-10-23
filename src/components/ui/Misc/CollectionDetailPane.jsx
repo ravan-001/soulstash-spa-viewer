@@ -35,6 +35,7 @@ export function CollectionDetailPane({
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isDesktopFilters, setIsDesktopFilters] = useState(() => window.innerWidth >= 768);
+  const [isCompactCollectionsViewport, setIsCompactCollectionsViewport] = useState(() => window.innerWidth < 1024);
   const [mobileFilterMenuStyle, setMobileFilterMenuStyle] = useState({ top: 0, left: 0 });
   const mobileFilterMenuRef = useRef(null);
   const mobileFilterTriggerRef = useRef(null);
